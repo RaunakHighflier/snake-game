@@ -16,3 +16,7 @@ Then visit http://localhost:8000
 
 - Arrow keys or WASD — move
 - Space — restart after game over
+
+## License
+
+This project is free to use for learning and experimentation.
