@@ -57,21 +57,25 @@ function resetGame() {
 }
 
 // Shared check so food and bombs never spawn on top of the snake or each other
-function isCellOccupied(x, y) {
+function isCellOccupied(x, y, { ignoreFood = false } = {}) {
   const onSnake = snake.some((segment) => segment.x === x && segment.y === y);
-  const onFood = food && food.x === x && food.y === y;
+  const onFood = !ignoreFood && food && food.x === x && food.y === y;
   const onBomb = bombs.some((bomb) => bomb.x === x && bomb.y === y);
   return onSnake || onFood || onBomb;
 }
 
 function placeFood() {
-  // Keep placing food until it lands on an empty cell
+  // Use local coords first — assigning to `food` before the check would
+  // always mark the cell as occupied and spin forever.
+  let x, y;
+  let attempts = 0;
   do {
-    food = {
-      x: Math.floor(Math.random() * TILE_COUNT),
-      y: Math.floor(Math.random() * TILE_COUNT),
-    };
-  } while (isCellOccupied(food.x, food.y));
+    x = Math.floor(Math.random() * TILE_COUNT);
+    y = Math.floor(Math.random() * TILE_COUNT);
+    attempts += 1;
+  } while (isCellOccupied(x, y, { ignoreFood: true }) && attempts < 100);
+
+  food = { x, y };
 }
 
 function spawnBomb() {
